@@ -98,6 +98,10 @@ func (c *Client) doRequest(method, path string, params url.Values, body interfac
 		if err := json.Unmarshal(respBody, &errorResp); err != nil {
 			return nil, fmt.Errorf("HTTP %d: %s", resp.StatusCode, string(respBody))
 		}
+		// If error message is empty, show the full response
+		if errorResp.Error.Message == "" {
+			return nil, fmt.Errorf("HTTP %d: %s", resp.StatusCode, string(respBody))
+		}
 		return nil, fmt.Errorf("API error: %s (HTTP %d)", errorResp.Error.Message, resp.StatusCode)
 	}
 

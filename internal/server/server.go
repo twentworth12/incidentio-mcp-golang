@@ -80,6 +80,8 @@ func (s *Server) registerTools() {
 	s.tools["update_incident"] = tools.NewUpdateIncidentTool(client)
 	s.tools["close_incident"] = tools.NewCloseIncidentTool(client)
 	s.tools["list_incident_statuses"] = tools.NewListIncidentStatusesTool(client)
+	s.tools["list_incident_types"] = tools.NewListIncidentTypesTool(client)
+	s.tools["list_severities"] = tools.NewListSeveritiesTool(client)
 
 	// Register Alert tools
 	s.tools["list_alerts"] = tools.NewListAlertsTool(client)

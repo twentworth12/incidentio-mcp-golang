@@ -178,6 +178,18 @@ func (t *CreateIncidentTool) InputSchema() map[string]interface{} {
 				"type":        "string",
 				"description": "The incident status ID",
 			},
+			"mode": map[string]interface{}{
+				"type":        "string",
+				"description": "The incident mode (standard, retrospective, tutorial)",
+				"enum":        []string{"standard", "retrospective", "tutorial"},
+				"default":     "standard",
+			},
+			"visibility": map[string]interface{}{
+				"type":        "string",
+				"description": "The incident visibility (public, private)",
+				"enum":        []string{"public", "private"},
+				"default":     "public",
+			},
 			"slack_channel_name_override": map[string]interface{}{
 				"type":        "string",
 				"description": "Override the auto-generated Slack channel name",
@@ -195,6 +207,8 @@ func (t *CreateIncidentTool) Execute(args map[string]interface{}) (string, error
 
 	req := &incidentio.CreateIncidentRequest{
 		Name: name,
+		Mode: "standard", // Default to standard mode
+		Visibility: "public", // Default to public visibility
 	}
 
 	if summary, ok := args["summary"].(string); ok {
@@ -208,6 +222,12 @@ func (t *CreateIncidentTool) Execute(args map[string]interface{}) (string, error
 	}
 	if typeID, ok := args["incident_type_id"].(string); ok {
 		req.IncidentTypeID = typeID
+	}
+	if mode, ok := args["mode"].(string); ok {
+		req.Mode = mode
+	}
+	if visibility, ok := args["visibility"].(string); ok {
+		req.Visibility = visibility
 	}
 	if slackOverride, ok := args["slack_channel_name_override"].(string); ok {
 		req.SlackChannelNameOverride = slackOverride
