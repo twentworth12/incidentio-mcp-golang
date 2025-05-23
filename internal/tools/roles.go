@@ -172,9 +172,19 @@ func (t *AssignIncidentRoleTool) InputSchema() map[string]interface{} {
 }
 
 func (t *AssignIncidentRoleTool) Execute(args map[string]interface{}) (string, error) {
+	// Debug: check what parameters we received
+	if len(args) == 0 {
+		return "", fmt.Errorf("no parameters provided")
+	}
+	
 	incidentID, ok := args["incident_id"].(string)
-	if !ok {
-		return "", fmt.Errorf("incident_id parameter is required")
+	if !ok || incidentID == "" {
+		// Debug: show what we actually received
+		argKeys := make([]string, 0, len(args))
+		for key := range args {
+			argKeys = append(argKeys, key)
+		}
+		return "", fmt.Errorf("incident_id parameter is required and must be a non-empty string. Received parameters: %v", argKeys)
 	}
 	
 	roleID, ok := args["incident_role_id"].(string)
@@ -187,7 +197,7 @@ func (t *AssignIncidentRoleTool) Execute(args map[string]interface{}) (string, e
 		return "", fmt.Errorf("user_id parameter is required")
 	}
 
-	// Create role assignment request
+	// Create role assignment request using UpdateIncident
 	req := &incidentio.UpdateIncidentRequest{
 		IncidentRoleAssignments: []incidentio.CreateRoleAssignmentRequest{
 			{

@@ -168,3 +168,32 @@ func (c *Client) UpdateIncident(id string, req *UpdateIncidentRequest) (*Inciden
 
 	return &response.Incident, nil
 }
+// AssignIncidentRoleRequest represents a request to assign a role to a user
+type AssignIncidentRoleRequest struct {
+	IncidentRoleID string `json:"incident_role_id"`
+	UserID         string `json:"user_id"`
+}
+
+// AssignIncidentRole assigns a specific role to a user for an incident
+func (c *Client) AssignIncidentRole(incidentID string, req *AssignIncidentRoleRequest) (*Incident, error) {
+	respBody, err := c.doRequest("PATCH", fmt.Sprintf("/incidents/%s", incidentID), nil, map[string]interface{}{
+		"incident_role_assignments": []map[string]interface{}{
+			{
+				"incident_role_id": req.IncidentRoleID,
+				"user_id":          req.UserID,
+			},
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var response struct {
+		Incident Incident `json:"incident"`
+	}
+	if err := json.Unmarshal(respBody, &response); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+	}
+
+	return &response.Incident, nil
+}
