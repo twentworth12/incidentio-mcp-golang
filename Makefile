@@ -1,4 +1,4 @@
-.PHONY: build run test clean deps test-api
+.PHONY: build run test clean deps test-api test-unit test-integration
 
 build:
 	go build -o bin/mcp-server cmd/mcp-server/main.go
@@ -17,12 +17,12 @@ deps:
 	go mod tidy
 
 test-api:
-	@echo "Testing Incident.io API connection..."
-	@if [ -f .env ]; then \
-		export $$(cat .env | xargs) && \
-		curl -H "Authorization: Bearer $$INCIDENT_IO_API_KEY" \
-		     -H "Content-Type: application/json" \
-		     "https://api.incident.io/v2/incidents?page_size=1" | jq .; \
-	else \
-		echo "No .env file found. Please create one with INCIDENT_IO_API_KEY=your-key"; \
-	fi
+	@echo "Testing incident.io API endpoints..."
+	@./test_endpoints.sh
+
+test-unit:
+	@echo "Running unit tests..."
+	go test -v ./internal/incidentio/...
+
+test-integration: test-unit build test-api
+	@echo "All integration tests completed!"
