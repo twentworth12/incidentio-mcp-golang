@@ -7,7 +7,9 @@
       "Bash(sed:*)",
       "Bash(rm:*)",
       "Bash(go test:*)",
-      "Bash(go build:*)"
+      "Bash(go build:*)",
+      "Bash(python3 test_search_user.py:*)",
+      "Bash(python3:*)"
     ],
     "deny": []
   }

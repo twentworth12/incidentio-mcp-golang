@@ -71,7 +71,7 @@ func (t *ListUsersTool) Name() string {
 }
 
 func (t *ListUsersTool) Description() string {
-	return "List all users available for incident role assignment"
+	return "List all users available for incident role assignment (defaults to 100 users)"
 }
 
 func (t *ListUsersTool) InputSchema() map[string]interface{} {
@@ -81,9 +81,14 @@ func (t *ListUsersTool) InputSchema() map[string]interface{} {
 			"page_size": map[string]interface{}{
 				"type":        "integer",
 				"description": "Number of results per page (max 250)",
-				"default":     25,
+				"default":     100,
+			},
+			"email": map[string]interface{}{
+				"type":        "string",
+				"description": "Filter users by email address",
 			},
 		},
+		"additionalProperties": false,
 	}
 }
 
@@ -93,18 +98,39 @@ func (t *ListUsersTool) Execute(args map[string]interface{}) (string, error) {
 	if pageSize, ok := args["page_size"].(float64); ok {
 		opts.PageSize = int(pageSize)
 	}
+	
+	if email, ok := args["email"].(string); ok && email != "" {
+		opts.Email = email
+	}
 
 	resp, err := t.client.ListUsers(opts)
 	if err != nil {
 		return "", err
 	}
-
-	result, err := json.MarshalIndent(resp, "", "  ")
-	if err != nil {
-		return "", fmt.Errorf("failed to format response: %w", err)
+	
+	// Add a helpful message about the results
+	var output string
+	if opts.Email != "" {
+		output = fmt.Sprintf("Users matching email '%s':\n", opts.Email)
+	} else {
+		output = fmt.Sprintf("Found %d users:\n", len(resp.Users))
+	}
+	
+	// Format users in a more readable way
+	for _, user := range resp.Users {
+		output += fmt.Sprintf("\n- Name: %s\n  Email: %s\n  ID: %s\n  Role: %s\n", 
+			user.Name, user.Email, user.ID, user.Role)
 	}
 
-	return string(result), nil
+	// Also include the raw JSON
+	jsonResult, err := json.MarshalIndent(resp, "", "  ")
+	if err != nil {
+		return output, nil // Return readable output even if JSON fails
+	}
+	
+	output += "\n\nRaw JSON response:\n" + string(jsonResult)
+
+	return output, nil
 }
 
 // AssignIncidentRoleTool assigns a role to a user for an incident

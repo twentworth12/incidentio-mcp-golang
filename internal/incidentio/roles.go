@@ -63,6 +63,7 @@ type ListIncidentRolesResponse struct {
 type ListUsersOptions struct {
 	PageSize int
 	After    string
+	Email    string // Filter by email
 }
 
 // ListUsersResponse represents the response from listing users
@@ -104,10 +105,19 @@ func (c *Client) ListUsers(opts *ListUsersOptions) (*ListUsersResponse, error) {
 	if opts != nil {
 		if opts.PageSize > 0 {
 			params.Set("page_size", strconv.Itoa(opts.PageSize))
+		} else {
+			// Default to 100 to get more users
+			params.Set("page_size", "100")
 		}
 		if opts.After != "" {
 			params.Set("after", opts.After)
 		}
+		if opts.Email != "" {
+			params.Set("email", opts.Email)
+		}
+	} else {
+		// Default page size
+		params.Set("page_size", "100")
 	}
 
 	respBody, err := c.doRequest("GET", "/users", params, nil)
