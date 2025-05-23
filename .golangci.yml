@@ -1,0 +1,25 @@
+linters:
+  enable:
+    - gofmt
+    - golint
+    - govet
+    - errcheck
+    - staticcheck
+    - ineffassign
+    - typecheck
+    - gocritic
+    - gosimple
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  govet:
+    enable-all: true
+  gofmt:
+    simplify: true
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0
