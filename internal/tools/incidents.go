@@ -3,6 +3,7 @@ package tools
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/tomwentworth/incidentio-mcp-golang/internal/incidentio"
 )
@@ -205,7 +206,11 @@ func (t *CreateIncidentTool) Execute(args map[string]interface{}) (string, error
 		return "", fmt.Errorf("name parameter is required")
 	}
 
+	// Generate idempotency key using timestamp and name
+	idempotencyKey := fmt.Sprintf("mcp-%d-%s", time.Now().UnixNano(), name)
+	
 	req := &incidentio.CreateIncidentRequest{
+		IdempotencyKey: idempotencyKey,
 		Name: name,
 		Mode: "standard", // Default to standard mode
 		Visibility: "public", // Default to public visibility

@@ -179,6 +179,7 @@ type AlertEvent struct {
 
 // CreateIncidentRequest represents a request to create an incident
 type CreateIncidentRequest struct {
+	IdempotencyKey           string                          `json:"idempotency_key"`
 	Name                     string                          `json:"name"`
 	Summary                  string                          `json:"summary,omitempty"`
 	IncidentStatusID         string                          `json:"incident_status_id,omitempty"`
