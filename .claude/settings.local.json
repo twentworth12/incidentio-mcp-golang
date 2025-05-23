@@ -6,7 +6,8 @@
       "Bash(find:*)",
       "Bash(sed:*)",
       "Bash(rm:*)",
-      "Bash(go test:*)"
+      "Bash(go test:*)",
+      "Bash(go build:*)"
     ],
     "deny": []
   }

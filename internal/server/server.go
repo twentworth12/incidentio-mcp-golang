@@ -38,13 +38,8 @@ func (s *Server) Start(ctx context.Context) error {
 				if err == io.EOF {
 					return nil
 				}
-				fmt.Fprintf(os.Stderr, "DEBUG: Failed to decode message: %v\n", err)
 				continue
 			}
-
-			// Debug: log the incoming message
-			msgBytes, _ := json.Marshal(msg)
-			fmt.Fprintf(os.Stderr, "DEBUG: Received message: %s\n", string(msgBytes))
 
 			response, err := s.handleMessage(&msg)
 			if err != nil {
@@ -52,9 +47,6 @@ func (s *Server) Start(ctx context.Context) error {
 			}
 
 			if response != nil {
-				// Debug: log the response being sent
-				responseBytes, _ := json.Marshal(response)
-				fmt.Fprintf(os.Stderr, "DEBUG: Sending response: %s\n", string(responseBytes))
 				encoder.Encode(response)
 			}
 		}
