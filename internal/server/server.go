@@ -94,6 +94,21 @@ func (s *Server) registerTools() {
 	s.tools["list_available_incident_roles"] = tools.NewListIncidentRolesTool(client)
 	s.tools["list_users"] = tools.NewListUsersTool(client)
 	s.tools["assign_incident_role"] = tools.NewAssignIncidentRoleTool(client)
+
+	// Register Workflow tools
+	s.tools["list_workflows"] = tools.NewListWorkflowsTool(client)
+	s.tools["get_workflow"] = tools.NewGetWorkflowTool(client)
+	s.tools["update_workflow"] = tools.NewUpdateWorkflowTool(client)
+
+	// Register Alert Route tools
+	s.tools["list_alert_routes"] = tools.NewListAlertRoutesTool(client)
+	s.tools["get_alert_route"] = tools.NewGetAlertRouteTool(client)
+	s.tools["create_alert_route"] = tools.NewCreateAlertRouteTool(client)
+	s.tools["update_alert_route"] = tools.NewUpdateAlertRouteTool(client)
+
+	// Register Alert Source and Event tools
+	s.tools["list_alert_sources"] = tools.NewListAlertSourcesTool(client)
+	s.tools["create_alert_event"] = tools.NewCreateAlertEventTool(client)
 }
 
 func (s *Server) handleMessage(msg *mcp.Message) (*mcp.Message, error) {

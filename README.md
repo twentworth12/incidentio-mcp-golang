@@ -102,15 +102,38 @@ func (t *MyTool) Execute(args map[string]interface{}) (string, error) {
 - `get_incident` - Get details of a specific incident by ID
 - `create_incident` - Create a new incident
 - `update_incident` - Update an existing incident
+- `close_incident` - Close an incident with proper workflow handling
+- `list_incident_statuses` - List available incident statuses
 
 ### Alert Management
 - `list_alerts` - List alerts with optional filters
 - `get_alert` - Get details of a specific alert by ID
 - `list_alerts_for_incident` - List alerts associated with a specific incident
+- `list_alert_sources` - List available alert sources
+- `create_alert_event` - Create an alert event
+
+### Alert Routing
+- `list_alert_routes` - List alert routes with optional pagination
+- `get_alert_route` - Get details of a specific alert route
+- `create_alert_route` - Create a new alert route with conditions and escalations
+- `update_alert_route` - Update an alert route's configuration
+
+### Workflow Management
+- `list_workflows` - List workflows with optional pagination
+- `get_workflow` - Get details of a specific workflow
+- `update_workflow` - Update a workflow's configuration
 
 ### Action Management
 - `list_actions` - List actions with optional filters (incident_id, status)
 - `get_action` - Get details of a specific action by ID
+
+### Roles and Users
+- `list_available_incident_roles` - List available incident roles
+- `list_users` - List users in the organization
+- `assign_incident_role` - Assign a role to a user for an incident
+
+### Testing
+- `example_tool` - A simple echo tool for testing
 
 ## MCP Protocol
 

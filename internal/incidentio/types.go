@@ -117,6 +117,66 @@ type Action struct {
 	Assignee    *User      `json:"assignee,omitempty"`
 }
 
+// Workflow represents a workflow in incident.io
+type Workflow struct {
+	ID          string                 `json:"id"`
+	Name        string                 `json:"name"`
+	Trigger     string                 `json:"trigger"`
+	Enabled     bool                   `json:"enabled"`
+	Runs        []WorkflowRun          `json:"runs,omitempty"`
+	State       map[string]interface{} `json:"state,omitempty"`
+	CreatedAt   time.Time              `json:"created_at"`
+	UpdatedAt   time.Time              `json:"updated_at"`
+}
+
+// WorkflowRun represents a workflow run
+type WorkflowRun struct {
+	ID         string    `json:"id"`
+	WorkflowID string    `json:"workflow_id"`
+	State      string    `json:"state"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+}
+
+// AlertRoute represents an alert route in incident.io
+type AlertRoute struct {
+	ID           string                 `json:"id"`
+	Name         string                 `json:"name"`
+	Enabled      bool                   `json:"enabled"`
+	Conditions   []AlertCondition       `json:"conditions"`
+	Escalations  []EscalationBinding    `json:"escalations"`
+	GroupingKeys []string               `json:"grouping_keys,omitempty"`
+	Template     map[string]interface{} `json:"template,omitempty"`
+	CreatedAt    time.Time              `json:"created_at"`
+	UpdatedAt    time.Time              `json:"updated_at"`
+}
+
+// AlertCondition represents a condition for alert routing
+type AlertCondition struct {
+	Field     string `json:"field"`
+	Operation string `json:"operation"`
+	Value     string `json:"value"`
+}
+
+// EscalationBinding represents an escalation in alert routing
+type EscalationBinding struct {
+	ID    string `json:"id"`
+	Level int    `json:"level"`
+}
+
+// AlertEvent represents an alert event
+type AlertEvent struct {
+	ID              string                 `json:"id"`
+	AlertSourceID   string                 `json:"alert_source_id"`
+	DeduplicationKey string                 `json:"deduplication_key,omitempty"`
+	Status          string                 `json:"status"`
+	Title           string                 `json:"title"`
+	Description     string                 `json:"description,omitempty"`
+	Metadata        map[string]interface{} `json:"metadata,omitempty"`
+	CreatedAt       time.Time              `json:"created_at"`
+	UpdatedAt       time.Time              `json:"updated_at"`
+}
+
 // CreateIncidentRequest represents a request to create an incident
 type CreateIncidentRequest struct {
 	Name                     string                          `json:"name"`
