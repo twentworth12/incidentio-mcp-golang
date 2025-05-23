@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod:*)",
+      "WebFetch(domain:api-docs.incident.io)"
+    ],
+    "deny": []
+  }
+}
