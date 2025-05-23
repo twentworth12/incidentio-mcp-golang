@@ -98,37 +98,71 @@ func (c *Client) ListIncidentRoles(opts *ListIncidentRolesOptions) (*ListInciden
 	return &response, nil
 }
 
-// ListUsers retrieves a list of users
+// ListUsers retrieves a list of users (with automatic pagination)
 func (c *Client) ListUsers(opts *ListUsersOptions) (*ListUsersResponse, error) {
-	params := url.Values{}
+	allUsers := []UserDetailed{}
+	pageSize := 250 // Use max page size
+	after := ""
 	
-	if opts != nil {
-		if opts.PageSize > 0 {
-			params.Set("page_size", strconv.Itoa(opts.PageSize))
-		} else {
-			// Default to 100 to get more users
-			params.Set("page_size", "100")
+	// If email filter is provided, don't paginate (API filters server-side)
+	if opts != nil && opts.Email != "" {
+		params := url.Values{}
+		params.Set("page_size", strconv.Itoa(pageSize))
+		params.Set("email", opts.Email)
+		
+		respBody, err := c.doRequest("GET", "/users", params, nil)
+		if err != nil {
+			return nil, err
 		}
-		if opts.After != "" {
-			params.Set("after", opts.After)
+
+		var response ListUsersResponse
+		if err := json.Unmarshal(respBody, &response); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal response: %w", err)
 		}
-		if opts.Email != "" {
-			params.Set("email", opts.Email)
+
+		return &response, nil
+	}
+	
+	// For non-filtered requests, paginate through all users
+	maxPages := 10 // Safety limit to prevent infinite loops
+	for page := 0; page < maxPages; page++ {
+		params := url.Values{}
+		params.Set("page_size", strconv.Itoa(pageSize))
+		if after != "" {
+			params.Set("after", after)
 		}
-	} else {
-		// Default page size
-		params.Set("page_size", "100")
-	}
 
-	respBody, err := c.doRequest("GET", "/users", params, nil)
-	if err != nil {
-		return nil, err
-	}
+		respBody, err := c.doRequest("GET", "/users", params, nil)
+		if err != nil {
+			return nil, err
+		}
 
-	var response ListUsersResponse
-	if err := json.Unmarshal(respBody, &response); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
-	}
+		var response ListUsersResponse
+		if err := json.Unmarshal(respBody, &response); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+		}
 
-	return &response, nil
+		allUsers = append(allUsers, response.Users...)
+		
+		// Check if there are more pages
+		if response.PaginationMeta.After == "" || len(response.Users) == 0 {
+			break
+		}
+		after = response.PaginationMeta.After
+	}
+	
+	// Return combined results
+	return &ListUsersResponse{
+		Users: allUsers,
+		ListResponse: ListResponse{
+			PaginationMeta: struct {
+				After      string `json:"after,omitempty"`
+				PageSize   int    `json:"page_size"`
+				TotalCount int    `json:"total_count"`
+			}{
+				PageSize:   pageSize,
+				TotalCount: 0, // API doesn't provide total count
+			},
+		},
+	}, nil
 }

@@ -71,7 +71,7 @@ func (t *ListUsersTool) Name() string {
 }
 
 func (t *ListUsersTool) Description() string {
-	return "List all users available for incident role assignment (defaults to 100 users)"
+	return "List all users available for incident role assignment (automatically paginated to return ALL users)"
 }
 
 func (t *ListUsersTool) InputSchema() map[string]interface{} {
@@ -81,7 +81,7 @@ func (t *ListUsersTool) InputSchema() map[string]interface{} {
 			"page_size": map[string]interface{}{
 				"type":        "integer",
 				"description": "Number of results per page (max 250)",
-				"default":     100,
+				"default":     250,
 			},
 			"email": map[string]interface{}{
 				"type":        "string",

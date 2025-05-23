@@ -73,11 +73,59 @@ func (s *MCPServer) start(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		default:
-			var msg mcp.Message
-			if err := decoder.Decode(&msg); err != nil {
+			var rawMsg json.RawMessage
+			if err := decoder.Decode(&rawMsg); err != nil {
 				if err == io.EOF {
 					return
 				}
+				// Skip malformed JSON silently
+				continue
+			}
+
+			// Try to parse as a proper JSON-RPC message
+			var msg mcp.Message
+			if err := json.Unmarshal(rawMsg, &msg); err != nil {
+				// If we can't parse it, try to extract an ID to send proper error
+				var partialMsg struct {
+					ID      interface{} `json:"id"`
+					Jsonrpc string      `json:"jsonrpc"`
+				}
+				if json.Unmarshal(rawMsg, &partialMsg) == nil && partialMsg.Jsonrpc == "2.0" {
+					errorResp := &mcp.Message{
+						Jsonrpc: "2.0",
+						ID:      partialMsg.ID,
+						Error: &mcp.Error{
+							Code:    -32700,
+							Message: "Parse error",
+						},
+					}
+					encoder.Encode(errorResp)
+				}
+				continue
+			}
+
+			// Validate required fields
+			if msg.Jsonrpc != "2.0" {
+				if msg.ID != nil {
+					errorResp := &mcp.Message{
+						Jsonrpc: "2.0",
+						ID:      msg.ID,
+						Error: &mcp.Error{
+							Code:    -32600,
+							Message: "Invalid Request: missing or invalid jsonrpc field",
+						},
+					}
+					encoder.Encode(errorResp)
+				}
+				continue
+			}
+
+			// Handle notifications (no ID) without response
+			if msg.ID == nil {
+				if msg.Method == "initialized" || msg.Method == "$/cancelled" {
+					continue
+				}
+				// Unknown notification, ignore silently
 				continue
 			}
 
@@ -90,6 +138,11 @@ func (s *MCPServer) start(ctx context.Context) {
 }
 
 func (s *MCPServer) handleMessage(msg *mcp.Message) *mcp.Message {
+	// Ensure we always have an ID for responses (except notifications)
+	if msg.ID == nil {
+		return nil // This is a notification, no response needed
+	}
+
 	switch msg.Method {
 	case "initialize":
 		return &mcp.Message{
@@ -98,16 +151,18 @@ func (s *MCPServer) handleMessage(msg *mcp.Message) *mcp.Message {
 			Result: map[string]interface{}{
 				"protocolVersion": "2024-11-05",
 				"capabilities": map[string]interface{}{
-					"tools": map[string]interface{}{},
+					"tools": map[string]interface{}{
+						"listChanged": false,
+					},
 				},
 				"serverInfo": map[string]interface{}{
 					"name":    "incidentio-mcp-server",
-					"version": "0.1.0",
+					"version": "1.0.0",
 				},
 			},
 		}
 	case "initialized":
-		// Return nil for initialized - no response needed
+		// This should be handled as notification (no ID), but just in case
 		return nil
 	case "tools/list":
 		var toolsList []map[string]interface{}

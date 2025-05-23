@@ -9,7 +9,13 @@
       "Bash(go test:*)",
       "Bash(go build:*)",
       "Bash(python3 test_search_user.py:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(./test_charlie_simple.py)",
+      "Bash(./test_exact_claude_call.py)",
+      "Bash(grep:*)",
+      "Bash(kill:*)",
+      "Bash(./test_list_users.py)",
+      "Bash(./test_pagination.py)"
     ],
     "deny": []
   }
