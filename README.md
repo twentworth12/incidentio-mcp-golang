@@ -1,6 +1,6 @@
-# Incident.io MCP Server
+# incident.io MCP Server
 
-A GoLang implementation of an MCP (Model Context Protocol) server for Incident.io, providing tools to interact with the Incident.io V2 API.
+A GoLang implementation of an MCP (Model Context Protocol) server for incident.io, providing tools to interact with the incident.io V2 API.
 
 ## Project Structure
 
@@ -21,7 +21,7 @@ A GoLang implementation of an MCP (Model Context Protocol) server for Incident.i
 ### Prerequisites
 
 - Go 1.21 or higher
-- Incident.io API key (set as `INCIDENT_IO_API_KEY` environment variable)
+- incident.io API key (set as `INCIDENT_IO_API_KEY` environment variable)
 
 ### Installation
 
@@ -41,7 +41,7 @@ This will create a binary in the `bin/` directory.
 
 ### Running
 
-Set your Incident.io API key:
+Set your incident.io API key:
 ```bash
 export INCIDENT_IO_API_KEY=your-api-key
 ```
@@ -118,9 +118,9 @@ This server implements the Model Context Protocol (MCP) for communication with A
 - Communicates via JSON-RPC over stdin/stdout
 - Supports tool registration and execution
 - Follows the MCP 2024-11-05 protocol version
-- Integrates with Incident.io V2 API endpoints
+- Integrates with incident.io V2 API endpoints
 
 ## Environment Variables
 
-- `INCIDENT_IO_API_KEY` (required) - Your Incident.io API key
+- `INCIDENT_IO_API_KEY` (required) - Your incident.io API key
 - `INCIDENT_IO_BASE_URL` (optional) - Override the API base URL (defaults to https://api.incident.io/v2)

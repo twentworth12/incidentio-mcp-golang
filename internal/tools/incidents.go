@@ -7,7 +7,7 @@ import (
 	"github.com/tomwentworth/incidentio-mcp-golang/internal/incidentio"
 )
 
-// ListIncidentsTool lists incidents from Incident.io
+// ListIncidentsTool lists incidents from incident.io
 type ListIncidentsTool struct {
 	client *incidentio.Client
 }
@@ -21,7 +21,7 @@ func (t *ListIncidentsTool) Name() string {
 }
 
 func (t *ListIncidentsTool) Description() string {
-	return "List incidents from Incident.io with optional filters"
+	return "List incidents from incident.io with optional filters"
 }
 
 func (t *ListIncidentsTool) InputSchema() map[string]interface{} {
@@ -146,7 +146,7 @@ func (t *CreateIncidentTool) Name() string {
 }
 
 func (t *CreateIncidentTool) Description() string {
-	return "Create a new incident in Incident.io"
+	return "Create a new incident in incident.io"
 }
 
 func (t *CreateIncidentTool) InputSchema() map[string]interface{} {

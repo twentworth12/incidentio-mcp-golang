@@ -7,7 +7,7 @@ import (
 	"github.com/tomwentworth/incidentio-mcp-golang/internal/incidentio"
 )
 
-// ListAlertsTool lists alerts from Incident.io
+// ListAlertsTool lists alerts from incident.io
 type ListAlertsTool struct {
 	client *incidentio.Client
 }
@@ -21,7 +21,7 @@ func (t *ListAlertsTool) Name() string {
 }
 
 func (t *ListAlertsTool) Description() string {
-	return "List alerts from Incident.io with optional filters"
+	return "List alerts from incident.io with optional filters"
 }
 
 func (t *ListAlertsTool) InputSchema() map[string]interface{} {

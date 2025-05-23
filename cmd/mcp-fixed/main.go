@@ -62,14 +62,14 @@ func (s *MCPServer) registerTools() {
 	exampleTool := &tools.ExampleTool{}
 	s.tools[exampleTool.Name()] = exampleTool
 
-	// Try to initialize Incident.io client
+	// Try to initialize incident.io client
 	client, err := incidentio.NewClient()
 	if err != nil {
 		// If client initialization fails, only example tool is available
 		return
 	}
 
-	// Register Incident.io tools with simplified schemas
+	// Register incident.io tools with simplified schemas
 	s.tools["list_incidents"] = &SimpleListIncidentsTool{client: client}
 	s.tools["get_incident"] = &SimpleGetIncidentTool{client: client}
 	s.tools["update_incident"] = &SimpleUpdateIncidentTool{client: client}
@@ -237,7 +237,7 @@ func (t *SimpleListIncidentsTool) Name() string {
 }
 
 func (t *SimpleListIncidentsTool) Description() string {
-	return "List incidents from Incident.io"
+	return "List incidents from incident.io"
 }
 
 func (t *SimpleListIncidentsTool) InputSchema() map[string]interface{} {

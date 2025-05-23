@@ -66,7 +66,7 @@ func (s *Server) registerTools() {
 	exampleTool := &tools.ExampleTool{}
 	s.tools[exampleTool.Name()] = exampleTool
 
-	// Initialize Incident.io client
+	// Initialize incident.io client
 	client, err := incidentio.NewClient()
 	if err != nil {
 		// If client initialization fails, we still have the example tool

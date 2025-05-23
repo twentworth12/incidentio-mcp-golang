@@ -38,7 +38,7 @@ type MCPServer struct {
 }
 
 func (s *MCPServer) registerTools() {
-	// Try to initialize Incident.io client
+	// Try to initialize incident.io client
 	client, err := incidentio.NewClient()
 	if err != nil {
 		// If client initialization fails, register only example tool
@@ -47,7 +47,7 @@ func (s *MCPServer) registerTools() {
 		return
 	}
 
-	// Register all Incident.io tools
+	// Register all incident.io tools
 	s.tools["list_incidents"] = tools.NewListIncidentsTool(client)
 	s.tools["get_incident"] = tools.NewGetIncidentTool(client)
 	s.tools["create_incident"] = tools.NewCreateIncidentTool(client)

@@ -2,7 +2,7 @@ package incidentio
 
 import "time"
 
-// Incident represents an incident in Incident.io
+// Incident represents an incident in incident.io
 type Incident struct {
 	ID                      string              `json:"id"`
 	Reference               string              `json:"reference"`
@@ -73,7 +73,7 @@ type RoleAssignment struct {
 	Assignee *User `json:"assignee,omitempty"`
 }
 
-// User represents a user in Incident.io
+// User represents a user in incident.io
 type User struct {
 	ID    string `json:"id"`
 	Name  string `json:"name"`
@@ -92,7 +92,7 @@ type CustomFieldEntry struct {
 	Values []interface{} `json:"values"`
 }
 
-// Alert represents an alert in Incident.io
+// Alert represents an alert in incident.io
 type Alert struct {
 	ID              string            `json:"id"`
 	Title           string            `json:"title"`
@@ -105,7 +105,7 @@ type Alert struct {
 	Incident        *Incident         `json:"incident,omitempty"`
 }
 
-// Action represents an action in Incident.io
+// Action represents an action in incident.io
 type Action struct {
 	ID          string     `json:"id"`
 	IncidentID  string     `json:"incident_id"`

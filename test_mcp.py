@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Simple test client for the Incident.io MCP server
+Simple test client for the incident.io MCP server
 """
 import json
 import subprocess

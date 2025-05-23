@@ -20,7 +20,7 @@ type IncidentRole struct {
 	UpdatedAt    string `json:"updated_at"`
 }
 
-// User represents a user in Incident.io (expanded from existing definition)
+// User represents a user in incident.io (expanded from existing definition)
 type UserDetailed struct {
 	ID            string     `json:"id"`
 	Name          string     `json:"name"`

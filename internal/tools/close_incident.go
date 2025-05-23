@@ -56,7 +56,7 @@ func (t *CloseIncidentTool) Execute(args map[string]interface{}) (string, error)
 	}
 
 	// Try to close the incident using the update API
-	// Incident.io has workflow restrictions, so we might need to go through intermediate steps
+	// incident.io has workflow restrictions, so we might need to go through intermediate steps
 	closedStatusID := "01JAR1BCBHSK633DVJSFC16RPY"
 	
 	req := &incidentio.UpdateIncidentRequest{
@@ -68,7 +68,7 @@ func (t *CloseIncidentTool) Execute(args map[string]interface{}) (string, error)
 		// If direct closure fails, provide helpful guidance
 		return fmt.Sprintf(`Failed to close incident directly: %v
 
-This might be due to workflow restrictions. Incident.io often requires incidents to go through specific states before closing.
+This might be due to workflow restrictions. incident.io often requires incidents to go through specific states before closing.
 
 Current status: %s (%s)
 Suggested workflow:
