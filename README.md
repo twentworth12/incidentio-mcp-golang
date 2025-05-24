@@ -134,6 +134,17 @@ func (t *MyTool) Execute(args map[string]interface{}) (string, error) {
 - `update_incident` - Update an existing incident
 - `close_incident` - Close an incident with proper workflow handling
 - `list_incident_statuses` - List available incident statuses
+- `list_incident_types` - List available incident types
+
+### Incident Updates
+- `list_incident_updates` - List incident status updates/messages
+- `get_incident_update` - Get a specific incident update
+- `create_incident_update` - Post a new status update to an incident
+- `delete_incident_update` - Delete an incident update
+
+### Severity Management
+- `list_severities` - List available severity levels
+- `get_severity` - Get details of a specific severity
 
 ### Alert Management
 - `list_alerts` - List alerts with optional filters
@@ -173,6 +184,28 @@ This server implements the Model Context Protocol (MCP) for communication with A
 - Follows the MCP 2024-11-05 protocol version
 - Integrates with incident.io V2 API endpoints
 
+## 🤖 Using with Claude
+
+Add to your Claude configuration:
+
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "incidentio": {
+      "command": "/path/to/incidentio-mcp-golang/bin/mcp-server-clean",
+      "env": {
+        "INCIDENT_IO_API_KEY": "your-api-key"
+      }
+    }
+  }
+}
+```
+
+After updating the configuration, restart Claude to load the incident.io tools.
+
 ## Environment Variables
 
 - `INCIDENT_IO_API_KEY` (required) - Your incident.io API key
@@ -192,6 +225,33 @@ make test
 ```
 
 See [TESTING.md](TESTING.md) for detailed testing documentation.
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+- **404 errors**: Ensure incident IDs are valid and exist in your instance
+- **Authentication errors**: Verify your API key is correct and has proper permissions
+- **Parameter errors**: All incident-related tools use `incident_id` as the parameter name
+- **Status transition errors**: Some incident status changes require specific workflows (e.g., must be in "Monitoring" before "Closed")
+- **Page size errors**: Different endpoints have different limits (incidents: 250, alerts: 50)
+
+### Debug Mode
+
+To enable debug logging, use the wrapper script:
+
+```bash
+# Create wrapper script
+cat > mcp-debug-wrapper.sh << 'EOF'
+#!/bin/bash
+LOG_FILE="/tmp/mcp-incidentio-debug-$(date +%Y%m%d).log"
+exec /path/to/bin/mcp-server-clean 2>>"$LOG_FILE"
+EOF
+
+chmod +x mcp-debug-wrapper.sh
+```
+
+Then use the wrapper in your Claude configuration to capture debug logs.
 
 ## 🤝 Contributing
 
