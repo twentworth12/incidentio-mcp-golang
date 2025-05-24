@@ -177,19 +177,29 @@ type AlertEvent struct {
 	UpdatedAt       time.Time              `json:"updated_at"`
 }
 
+// RetrospectiveIncidentOptionsRequest represents retrospective options for an incident
+type RetrospectiveIncidentOptionsRequest struct {
+	ExternalID            int64  `json:"external_id,omitempty"`
+	PostmortemDocumentURL string `json:"postmortem_document_url,omitempty"`
+	SlackChannelID        string `json:"slack_channel_id,omitempty"`
+}
+
 // CreateIncidentRequest represents a request to create an incident
 type CreateIncidentRequest struct {
-	IdempotencyKey           string                          `json:"idempotency_key"`
-	Name                     string                          `json:"name"`
-	Summary                  string                          `json:"summary,omitempty"`
-	IncidentStatusID         string                          `json:"incident_status_id,omitempty"`
-	SeverityID               string                          `json:"severity_id,omitempty"`
-	IncidentTypeID           string                          `json:"incident_type_id,omitempty"`
-	Mode                     string                          `json:"mode,omitempty"`
-	Visibility               string                          `json:"visibility,omitempty"`
-	CustomFieldEntries       []CustomFieldEntryRequest       `json:"custom_field_entries,omitempty"`
-	IncidentRoleAssignments  []CreateRoleAssignmentRequest   `json:"incident_role_assignments,omitempty"`
-	SlackChannelNameOverride string                          `json:"slack_channel_name_override,omitempty"`
+	IdempotencyKey               string                               `json:"idempotency_key"`
+	Name                         string                               `json:"name"`
+	Summary                      string                               `json:"summary,omitempty"`
+	IncidentStatusID             string                               `json:"incident_status_id,omitempty"`
+	SeverityID                   string                               `json:"severity_id,omitempty"`
+	IncidentTypeID               string                               `json:"incident_type_id,omitempty"`
+	Mode                         string                               `json:"mode,omitempty"`
+	Visibility                   string                               `json:"visibility,omitempty"`
+	CustomFieldEntries           []CustomFieldEntryRequest            `json:"custom_field_entries,omitempty"`
+	IncidentRoleAssignments      []CreateRoleAssignmentRequest        `json:"incident_role_assignments,omitempty"`
+	IncidentTimestampValues      []IncidentTimestampValueRequest      `json:"incident_timestamp_values,omitempty"`
+	SlackChannelNameOverride     string                               `json:"slack_channel_name_override,omitempty"`
+	SlackTeamID                  string                               `json:"slack_team_id,omitempty"`
+	RetrospectiveIncidentOptions *RetrospectiveIncidentOptionsRequest `json:"retrospective_incident_options,omitempty"`
 }
 
 // CustomFieldEntryRequest represents a custom field entry in create/update requests
@@ -204,14 +214,52 @@ type CreateRoleAssignmentRequest struct {
 	UserID         string `json:"user_id"`
 }
 
+// IncidentTimestampValueRequest represents a timestamp value update request
+type IncidentTimestampValueRequest struct {
+	IncidentTimestampID string `json:"incident_timestamp_id"`
+	Value               string `json:"value"`
+}
+
 // UpdateIncidentRequest represents a request to update an incident
 type UpdateIncidentRequest struct {
-	Name                    string                          `json:"name,omitempty"`
-	Summary                 string                          `json:"summary,omitempty"`
-	IncidentStatusID        string                          `json:"incident_status_id,omitempty"`
-	SeverityID              string                          `json:"severity_id,omitempty"`
-	CustomFieldEntries      []CustomFieldEntryRequest       `json:"custom_field_entries,omitempty"`
-	IncidentRoleAssignments []CreateRoleAssignmentRequest   `json:"incident_role_assignments,omitempty"`
+	Name                     string                          `json:"name,omitempty"`
+	Summary                  string                          `json:"summary,omitempty"`
+	IncidentStatusID         string                          `json:"incident_status_id,omitempty"`
+	SeverityID               string                          `json:"severity_id,omitempty"`
+	CallURL                  string                          `json:"call_url,omitempty"`
+	SlackChannelNameOverride string                          `json:"slack_channel_name_override,omitempty"`
+	CustomFieldEntries       []CustomFieldEntryRequest       `json:"custom_field_entries,omitempty"`
+	IncidentRoleAssignments  []CreateRoleAssignmentRequest   `json:"incident_role_assignments,omitempty"`
+	IncidentTimestampValues  []IncidentTimestampValueRequest `json:"incident_timestamp_values,omitempty"`
+}
+
+// IncidentUpdate represents a status update posted to an incident
+type IncidentUpdate struct {
+	ID         string    `json:"id"`
+	IncidentID string    `json:"incident_id"`
+	Message    string    `json:"message"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	Author     *User     `json:"author,omitempty"`
+}
+
+// CreateIncidentUpdateRequest represents a request to create an incident update
+type CreateIncidentUpdateRequest struct {
+	IncidentID string `json:"incident_id"`
+	Message    string `json:"message"`
+}
+
+// ListIncidentUpdatesOptions represents options for listing incident updates
+type ListIncidentUpdatesOptions struct {
+	IncidentID string
+	PageSize   int
+	After      string
+}
+
+// ListIncidentUpdatesResponse represents the response from listing incident updates
+type ListIncidentUpdatesResponse struct {
+	IncidentUpdates []IncidentUpdate `json:"incident_updates"`
+	ListResponse
 }
 
 // ListResponse represents a paginated list response

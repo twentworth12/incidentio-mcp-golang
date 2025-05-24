@@ -3,6 +3,7 @@ package tools
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/tomwentworth/incidentio-mcp-golang/internal/incidentio"
@@ -105,19 +106,25 @@ func (t *GetIncidentTool) InputSchema() map[string]interface{} {
 	return map[string]interface{}{
 		"type": "object",
 		"properties": map[string]interface{}{
-			"id": map[string]interface{}{
+			"incident_id": map[string]interface{}{
 				"type":        "string",
 				"description": "The incident ID",
 			},
 		},
-		"required": []string{"id"},
+		"required":             []interface{}{"incident_id"},
+		"additionalProperties": false,
 	}
 }
 
 func (t *GetIncidentTool) Execute(args map[string]interface{}) (string, error) {
-	id, ok := args["id"].(string)
-	if !ok {
-		return "", fmt.Errorf("id parameter is required")
+	id, ok := args["incident_id"].(string)
+	if !ok || id == "" {
+		// Debug: show what we actually received
+		argDetails := make(map[string]interface{})
+		for key, value := range args {
+			argDetails[key] = value
+		}
+		return "", fmt.Errorf("incident_id parameter is required and must be a non-empty string. Received parameters: %+v", argDetails)
 	}
 
 	incident, err := t.client.GetIncident(id)
@@ -196,7 +203,8 @@ func (t *CreateIncidentTool) InputSchema() map[string]interface{} {
 				"description": "Override the auto-generated Slack channel name",
 			},
 		},
-		"required": []string{"name"},
+		"required": []interface{}{"name"},
+		"additionalProperties": false,
 	}
 }
 
@@ -272,7 +280,7 @@ func (t *UpdateIncidentTool) InputSchema() map[string]interface{} {
 	return map[string]interface{}{
 		"type": "object",
 		"properties": map[string]interface{}{
-			"id": map[string]interface{}{
+			"incident_id": map[string]interface{}{
 				"type":        "string",
 				"description": "The incident ID to update",
 			},
@@ -293,15 +301,26 @@ func (t *UpdateIncidentTool) InputSchema() map[string]interface{} {
 				"description": "Update the severity ID",
 			},
 		},
-		"required": []string{"id"},
+		"required": []interface{}{"incident_id"},
+		"additionalProperties": false,
 	}
 }
 
 func (t *UpdateIncidentTool) Execute(args map[string]interface{}) (string, error) {
-	id, ok := args["id"].(string)
-	if !ok {
-		return "", fmt.Errorf("id parameter is required")
+	// Log all received arguments
+	fmt.Fprintf(os.Stderr, "[DEBUG] UpdateIncidentTool.Execute called with args: %+v\n", args)
+	
+	id, ok := args["incident_id"].(string)
+	if !ok || id == "" {
+		// Debug: show what we actually received
+		argDetails := make(map[string]interface{})
+		for key, value := range args {
+			argDetails[key] = value
+		}
+		return "", fmt.Errorf("incident_id parameter is required and must be a non-empty string. Received parameters: %+v", argDetails)
 	}
+
+	fmt.Fprintf(os.Stderr, "[DEBUG] UpdateIncidentTool: incident ID = %s\n", id)
 
 	req := &incidentio.UpdateIncidentRequest{}
 	hasUpdate := false
@@ -321,11 +340,14 @@ func (t *UpdateIncidentTool) Execute(args map[string]interface{}) (string, error
 	if severityID, ok := args["severity_id"].(string); ok {
 		req.SeverityID = severityID
 		hasUpdate = true
+		fmt.Fprintf(os.Stderr, "[DEBUG] UpdateIncidentTool: setting severity_id = %s\n", severityID)
 	}
 
 	if !hasUpdate {
 		return "", fmt.Errorf("at least one field to update must be provided")
 	}
+	
+	fmt.Fprintf(os.Stderr, "[DEBUG] UpdateIncidentTool: calling client.UpdateIncident with id=%s, req=%+v\n", id, req)
 
 	incident, err := t.client.UpdateIncident(id, req)
 	if err != nil {

@@ -15,7 +15,17 @@
       "Bash(grep:*)",
       "Bash(kill:*)",
       "Bash(./test_list_users.py)",
-      "Bash(./test_pagination.py)"
+      "Bash(./test_pagination.py)",
+      "Bash(./test_incidents_query.py)",
+      "Bash(./test_get_incident.py)",
+      "Bash(if [ -f /tmp/mcp-debug.log ])",
+      "Bash(then echo \"=== /tmp/mcp-debug.log ===\")",
+      "Bash(fi)",
+      "Bash(if [ -f ~/mcp-debug.log ])",
+      "Bash(then echo \"=== ~/mcp-debug.log ===\")",
+      "Bash(./test_update_incident.sh:*)",
+      "Bash(go run:*)",
+      "Bash(./test_pause.sh:*)"
     ],
     "deny": []
   }

@@ -24,10 +24,39 @@ type ListIncidentsResponse struct {
 // ListIncidents retrieves a list of incidents with automatic pagination
 func (c *Client) ListIncidents(opts *ListIncidentsOptions) (*ListIncidentsResponse, error) {
 	allIncidents := []Incident{}
-	pageSize := 250 // Use max page size
+	pageSize := 250 // Default max page size
 	after := ""
 	
-	// Set up base parameters
+	// If a specific page size is requested, respect it and don't paginate
+	if opts != nil && opts.PageSize > 0 {
+		params := url.Values{}
+		params.Set("page_size", strconv.Itoa(opts.PageSize))
+		
+		if opts.After != "" {
+			params.Set("after", opts.After)
+		}
+		
+		for _, status := range opts.Status {
+			params.Add("status", status)
+		}
+		for _, severity := range opts.Severity {
+			params.Add("severity", severity)
+		}
+
+		respBody, err := c.doRequest("GET", "/incidents", params, nil)
+		if err != nil {
+			return nil, err
+		}
+
+		var response ListIncidentsResponse
+		if err := json.Unmarshal(respBody, &response); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+		}
+
+		return &response, nil
+	}
+	
+	// Set up base parameters for auto-pagination
 	baseParams := url.Values{}
 	if opts != nil {
 		for _, status := range opts.Status {
@@ -143,8 +172,20 @@ func (c *Client) UpdateIncident(id string, req *UpdateIncidentRequest) (*Inciden
 	if req.SeverityID != "" {
 		incident["severity_id"] = req.SeverityID
 	}
+	if req.CallURL != "" {
+		incident["call_url"] = req.CallURL
+	}
+	if req.SlackChannelNameOverride != "" {
+		incident["slack_channel_name_override"] = req.SlackChannelNameOverride
+	}
 	if len(req.IncidentRoleAssignments) > 0 {
 		incident["incident_role_assignments"] = req.IncidentRoleAssignments
+	}
+	if len(req.CustomFieldEntries) > 0 {
+		incident["custom_field_entries"] = req.CustomFieldEntries
+	}
+	if len(req.IncidentTimestampValues) > 0 {
+		incident["incident_timestamp_values"] = req.IncidentTimestampValues
 	}
 	
 	// Only include incident object if there are fields to update

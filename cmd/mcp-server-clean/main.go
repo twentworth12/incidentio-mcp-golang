@@ -62,6 +62,8 @@ func (s *MCPServer) registerTools() {
 	s.tools["list_available_incident_roles"] = tools.NewListIncidentRolesTool(client)
 	s.tools["list_users"] = tools.NewListUsersTool(client)
 	s.tools["assign_incident_role"] = tools.NewAssignIncidentRoleTool(client)
+	s.tools["list_severities"] = tools.NewListSeveritiesTool(client)
+	s.tools["get_severity"] = tools.NewGetSeverityTool(client)
 }
 
 func (s *MCPServer) start(ctx context.Context) {

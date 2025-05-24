@@ -74,6 +74,13 @@ func (s *Server) registerTools() {
 	s.tools["list_incident_statuses"] = tools.NewListIncidentStatusesTool(client)
 	s.tools["list_incident_types"] = tools.NewListIncidentTypesTool(client)
 	s.tools["list_severities"] = tools.NewListSeveritiesTool(client)
+	s.tools["get_severity"] = tools.NewGetSeverityTool(client)
+
+	// Register Incident Update tools
+	s.tools["list_incident_updates"] = tools.NewListIncidentUpdatesTool(client)
+	s.tools["get_incident_update"] = tools.NewGetIncidentUpdateTool(client)
+	s.tools["create_incident_update"] = tools.NewCreateIncidentUpdateTool(client)
+	s.tools["delete_incident_update"] = tools.NewDeleteIncidentUpdateTool(client)
 
 	// Register Alert tools
 	s.tools["list_alerts"] = tools.NewListAlertsTool(client)
@@ -181,14 +188,23 @@ func (s *Server) handleToolCall(msg *mcp.Message) (*mcp.Message, error) {
 		return nil, fmt.Errorf("missing tool name")
 	}
 
+	// Debug logging
+	fmt.Fprintf(os.Stderr, "[DEBUG] Tool call: %s\n", toolName)
+	
 	tool, exists := s.tools[toolName]
 	if !exists {
 		return nil, fmt.Errorf("tool not found: %s", toolName)
 	}
 
 	args, _ := params["arguments"].(map[string]interface{})
+	
+	// Debug log the arguments
+	argsJSON, _ := json.Marshal(args)
+	fmt.Fprintf(os.Stderr, "[DEBUG] Tool arguments: %s\n", string(argsJSON))
+	
 	result, err := tool.Execute(args)
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "[DEBUG] Tool error: %s\n", err.Error())
 		return nil, err
 	}
 

@@ -140,7 +140,7 @@ func (t *ListAlertsForIncidentTool) InputSchema() map[string]interface{} {
 	return map[string]interface{}{
 		"type": "object",
 		"properties": map[string]interface{}{
-			"incident_id": map[string]interface{}{
+			"id": map[string]interface{}{
 				"type":        "string",
 				"description": "The incident ID",
 			},
@@ -150,14 +150,14 @@ func (t *ListAlertsForIncidentTool) InputSchema() map[string]interface{} {
 				"default":     25,
 			},
 		},
-		"required": []string{"incident_id"},
+		"required": []interface{}{"id"},
 	}
 }
 
 func (t *ListAlertsForIncidentTool) Execute(args map[string]interface{}) (string, error) {
-	incidentID, ok := args["incident_id"].(string)
-	if !ok {
-		return "", fmt.Errorf("incident_id parameter is required")
+	incidentID, ok := args["id"].(string)
+	if !ok || incidentID == "" {
+		return "", fmt.Errorf("id parameter is required")
 	}
 
 	opts := &incidentio.ListAlertsOptions{}

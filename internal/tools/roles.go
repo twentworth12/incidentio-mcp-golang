@@ -154,7 +154,7 @@ func (t *AssignIncidentRoleTool) InputSchema() map[string]interface{} {
 	return map[string]interface{}{
 		"type": "object",
 		"properties": map[string]interface{}{
-			"incident_id": map[string]interface{}{
+			"id": map[string]interface{}{
 				"type":        "string",
 				"description": "The incident ID",
 			},
@@ -167,24 +167,25 @@ func (t *AssignIncidentRoleTool) InputSchema() map[string]interface{} {
 				"description": "The user ID to assign the role to",
 			},
 		},
-		"required": []string{"incident_id", "incident_role_id", "user_id"},
+		"required":                []interface{}{"id", "incident_role_id", "user_id"},
+		"additionalProperties":    false,
 	}
 }
 
 func (t *AssignIncidentRoleTool) Execute(args map[string]interface{}) (string, error) {
-	// Debug: check what parameters we received
+	// Debug: show ALL parameters we received
+	argDetails := make(map[string]interface{})
+	for key, value := range args {
+		argDetails[key] = value
+	}
+	
 	if len(args) == 0 {
 		return "", fmt.Errorf("no parameters provided")
 	}
 	
-	incidentID, ok := args["incident_id"].(string)
+	incidentID, ok := args["id"].(string)
 	if !ok || incidentID == "" {
-		// Debug: show what we actually received
-		argKeys := make([]string, 0, len(args))
-		for key := range args {
-			argKeys = append(argKeys, key)
-		}
-		return "", fmt.Errorf("incident_id parameter is required and must be a non-empty string. Received parameters: %v", argKeys)
+		return "", fmt.Errorf("id parameter is required and must be a non-empty string. Received parameters: %+v", argDetails)
 	}
 	
 	roleID, ok := args["incident_role_id"].(string)
