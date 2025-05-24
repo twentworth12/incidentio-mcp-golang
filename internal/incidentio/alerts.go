@@ -23,7 +23,7 @@ type ListAlertsResponse struct {
 // ListAlerts retrieves a list of alerts with automatic pagination
 func (c *Client) ListAlerts(opts *ListAlertsOptions) (*ListAlertsResponse, error) {
 	allAlerts := []Alert{}
-	pageSize := 250 // Use max page size
+	pageSize := 50 // Max page size for alerts is 50
 	after := ""
 	
 	// Set up base parameters
@@ -103,7 +103,7 @@ func (c *Client) GetAlert(id string) (*Alert, error) {
 // ListAlertsForIncident retrieves alerts for a specific incident with automatic pagination
 func (c *Client) ListAlertsForIncident(incidentID string, opts *ListAlertsOptions) (*ListAlertsResponse, error) {
 	allAlerts := []Alert{}
-	pageSize := 250 // Use max page size
+	pageSize := 50 // Max page size for alerts is 50
 	after := ""
 	
 	// Set up base parameters
@@ -123,12 +123,13 @@ func (c *Client) ListAlertsForIncident(incidentID string, opts *ListAlertsOption
 			params[k] = v
 		}
 		
+		params.Set("incident_id", incidentID) // Filter by incident
 		params.Set("page_size", strconv.Itoa(pageSize))
 		if after != "" {
 			params.Set("after", after)
 		}
 
-		respBody, err := c.doRequest("GET", fmt.Sprintf("/incidents/%s/alerts", incidentID), params, nil)
+		respBody, err := c.doRequest("GET", "/alerts", params, nil)
 		if err != nil {
 			return nil, err
 		}
